@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <HelloWorld />
+      <add-course-page />
     </v-main>
   </v-app>
 </template>
