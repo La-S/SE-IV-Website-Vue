@@ -2,7 +2,17 @@
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
     <v-btn class="text-right" >Add Course</v-btn>
-    <v-btn class="text-right">Import Place Holder</v-btn>
+    <CustomModal title="Import Data">
+      <template v-slot:modal-body>
+        <h2>test</h2>
+      </template>
+      <template v-slot:actions>
+        <v-btn
+        text="BTN 1"
+        @click="console.log('TEST!!!')"
+      ></v-btn>
+      </template>
+    </CustomModal>
   </header>
 
   <v-card class="mx-auto px-4">
@@ -37,18 +47,6 @@
       </template>
     </v-data-table-server>
   </v-card>
-
-  <CustomModal title="Import Data">
-    <template v-slot:modal-body>
-      <h2>test</h2>
-    </template>
-    <template v-slot:actions>
-      <v-btn
-      text="BTN 1"
-      @click="console.log('TEST!!!')"
-    ></v-btn>
-    </template>
-  </CustomModal>
 </template>
 
 <script setup>
