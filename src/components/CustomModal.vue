@@ -14,7 +14,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <slot name="actions"></slot>
+          <slot name="actions" v-bind="isActive"></slot>
           <v-btn
             text="Cancel"
             @click="isActive.value = false"
