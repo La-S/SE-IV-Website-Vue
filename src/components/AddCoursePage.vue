@@ -35,10 +35,23 @@
   </template>
 </v-data-table-server>
   </v-card>
+
+  <CustomModal title="Import Data">
+    <template v-slot:modal-body>
+      <h2>test</h2>
+    </template>
+    <template v-slot:actions>
+      <v-btn
+      text="BTN 1"
+      @click="console.log('TEST!!!')"
+    ></v-btn>
+    </template>
+  </CustomModal>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import CustomModal from './CustomModal.vue'
 
 const itemsPerPage = ref(5)
 const headers = ref([
