@@ -2,7 +2,17 @@
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
     <v-btn class="text-right" >Add Course</v-btn>
-    <v-btn class="text-right">Import Place Holder</v-btn>
+    <CustomModal title="Import Data">
+      <template v-slot:modal-body>
+        <h2>test</h2>
+      </template>
+      <template v-slot:actions="isActive">
+        <v-btn
+        text="BTN 1"
+        @click="console.log('TEST!!!')"
+      ></v-btn>
+      </template>
+    </CustomModal>
   </header>
 
   <v-card class="mx-auto px-4">
@@ -32,7 +42,19 @@
           </td>
           <td>{{ item.description }}</td>
           <td><v-btn block>Edit</v-btn></td>
-          <td><v-btn block>Delete</v-btn></td>
+          <td>
+            <CustomModal title="Delete">
+              <template v-slot:modal-body>
+                <p>Are you sure you want to delete the course '{{ item.title }}'?</p>
+              </template>
+              <template v-slot:actions="isActive">
+                <v-btn
+                text="Yes"
+                @click="deleteCourse(item.courseNum); isActive.value = false"
+              ></v-btn>
+              </template>
+            </CustomModal>
+          </td>
         </tr>
       </template>
     </v-data-table-server>
@@ -41,6 +63,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import CustomModal from './CustomModal.vue'
 
 const itemsPerPage = ref(5)
 const headers = ref([
@@ -86,5 +109,10 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 
 function addCourse() {
   console.log("Add Course clicked")
+}
+
+function deleteCourse(courseId) {
+  // do rest request here...
+  console.log("deleting: "+courseId);
 }
 </script>
