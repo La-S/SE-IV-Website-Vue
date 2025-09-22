@@ -5,7 +5,7 @@
     <CustomModal title="Import Data" @modal-closed="uploadedFile = null">
       <template v-slot:modal-body>
         <p>Please upload a file in CSV format.</p>
-        <input type="file" @change="getChangedFile"/>
+        <input type="file" accept=".csv" @change="getChangedFile"/>
       </template>
       <template v-slot:actions="isActive" >
         <v-btn
