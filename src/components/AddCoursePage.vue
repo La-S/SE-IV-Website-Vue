@@ -1,8 +1,9 @@
 <template>
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
-    <v-btn class="text-right" >Add Course</v-btn>
-    <v-btn class="text-right">Import Place Holder</v-btn>
+    <v-btn @click="addCourse">Add Course</v-btn>
+    <v-btn>Import Place Holder</v-btn>
+
   </header>
 
   <v-card class="mx-auto px-4">
@@ -17,22 +18,30 @@
       @update:options="loadItems"
     >
       <template #body="{ items }">
-        <tr v-for="item in items" :key="item.id">
+        <tr v-for="item in items" :key="item.courseNum">
           <td>
             <strong>{{ item.title }}</strong>
             <div class="text-caption text-grey">
               {{ item.courseNum }}
             </div>
           </td>
+
           <td class="text-right">
             <strong>{{ item.level }}</strong>
             <div class="text-caption text-grey">
               {{ item.credits + " Hrs" }}
             </div>
           </td>
+
           <td>{{ item.description }}</td>
-          <td><v-btn block>Edit</v-btn></td>
-          <td><v-btn block>Delete</v-btn></td>
+
+          <td>
+            <v-btn block @click="editCourse(item)">Edit</v-btn>
+          </td>
+
+          <td>
+            <v-btn block @click="deleteCourse(item)">Delete</v-btn>
+          </td>
         </tr>
       </template>
     </v-data-table-server>
@@ -86,5 +95,13 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 
 function addCourse() {
   console.log("Add Course clicked")
+}
+
+function editCourse(course) {
+  console.log("Edit Course clicked:", course)
+}
+
+function deleteCourse(course) {
+  console.log("Delete Course clicked:", course)
 }
 </script>
