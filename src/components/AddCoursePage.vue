@@ -1,39 +1,41 @@
 <template>
-  <header>
-    <h1 class="text-center">Courses</h1>
+  <header class="d-flex align-center justify-space-between px-4 py-2">
+    <h1 class="text-center my-0">Courses</h1>
+    <v-btn class="text-right" >Add Course</v-btn>
+    <v-btn class="text-right">Import Place Holder</v-btn>
   </header>
 
-<v-card class="mx-auto px-4">
-<v-data-table-server
-  v-model:items-per-page="itemsPerPage"
-  :headers="headers"
-  :items="serverItems"
-  :items-length="totalItems"
-  :loading="loading"
-  :search="search"
-  item-value="id"
-  @update:options="loadItems"
->
-  <template #body="{ items }">
-    <tr v-for="item in items" :key="item.id">
-      <td>
-        <strong>{{ item.title }}</strong>
-        <div class="text-caption text-grey">
-          {{ item.courseNum }}
-        </div>
-      </td>
-      <td class="text-right">
-        
-        <strong>{{ item.level }}</strong>
-        <div class="text-caption text-grey">
-            {{item.credits + " Hrs" }}
-        </div>
-      </td>
-
-      <td>{{ item.description }}</td>
-    </tr>
-  </template>
-</v-data-table-server>
+  <v-card class="mx-auto px-4">
+    <v-data-table-server
+      v-model:items-per-page="itemsPerPage"
+      :headers="headers"
+      :items="serverItems"
+      :items-length="totalItems"
+      :loading="loading"
+      :search="search"
+      item-value="id"
+      @update:options="loadItems"
+    >
+      <template #body="{ items }">
+        <tr v-for="item in items" :key="item.id">
+          <td>
+            <strong>{{ item.title }}</strong>
+            <div class="text-caption text-grey">
+              {{ item.courseNum }}
+            </div>
+          </td>
+          <td class="text-right">
+            <strong>{{ item.level }}</strong>
+            <div class="text-caption text-grey">
+              {{ item.credits + " Hrs" }}
+            </div>
+          </td>
+          <td>{{ item.description }}</td>
+          <td><v-btn block>Edit</v-btn></td>
+          <td><v-btn block>Delete</v-btn></td>
+        </tr>
+      </template>
+    </v-data-table-server>
   </v-card>
 
   <CustomModal title="Import Data">
@@ -55,9 +57,9 @@ import CustomModal from './CustomModal.vue'
 
 const itemsPerPage = ref(5)
 const headers = ref([
-  { title: 'Course', key: 'course' },  
+  { title: 'Course', key: 'course' },
   { title: 'Level/Hours', key: 'credits', align: 'end' },
-  { title: 'Description', key: 'description'},
+  { title: 'Description', key: 'description' },
 ])
 
 const search = ref('')
@@ -82,7 +84,7 @@ async function fetchCourses({ page, itemsPerPage }) {
       const paginated = data.slice(start, end === -1 ? undefined : end)
 
       resolve({ items: paginated, total: data.length })
-    },)
+    }, 300)
   })
 }
 
@@ -93,5 +95,9 @@ function loadItems({ page, itemsPerPage, sortBy }) {
     totalItems.value = total
     loading.value = false
   })
+}
+
+function addCourse() {
+  console.log("Add Course clicked")
 }
 </script>
