@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="500px">
+  <v-dialog max-width="500px" @click:outside="closeModal">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-bind="activatorProps"
@@ -17,7 +17,7 @@
           <slot name="actions" v-bind="isActive"></slot>
           <v-btn
             text="Cancel"
-            @click="isActive.value = false"
+            @click="isActive.value = false; closeModal()"
           ></v-btn>
         </v-card-actions>
       </v-card>
@@ -26,5 +26,10 @@
 </template>
 
 <script setup lang="ts">
-  const props = defineProps({title: String})
+  const props = defineProps({title: String, onClose: Function})
+  const emit = defineEmits(['modalClosed'])
+
+  function closeModal() {
+    emit('modalClosed');
+  }
 </script>

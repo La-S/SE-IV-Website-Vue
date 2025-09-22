@@ -2,14 +2,16 @@
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
     <v-btn class="text-right" >Add Course</v-btn>
-    <CustomModal title="Import Data">
+    <CustomModal title="Import Data" @modal-closed="uploadedFile = null">
       <template v-slot:modal-body>
-        <h2>test</h2>
+        <p>Please upload a file in CSV format.</p>
+        <input type="file" @change="getChangedFile"/>
       </template>
-      <template v-slot:actions="isActive">
+      <template v-slot:actions="isActive" >
         <v-btn
-        text="BTN 1"
-        @click="console.log('TEST!!!')"
+        text="Upload"
+        @click="uploadFiles(); isActive.value = false; uploadedFile = null;"
+        :disabled="uploadedFile == null"
       ></v-btn>
       </template>
     </CustomModal>
@@ -65,6 +67,7 @@
 import { ref } from 'vue'
 import CustomModal from './CustomModal.vue'
 
+let uploadedFile = ref(null);
 const itemsPerPage = ref(5)
 const headers = ref([
   { title: 'Course', key: 'course' },
@@ -115,4 +118,25 @@ function deleteCourse(courseId) {
   // do rest request here...
   console.log("deleting: "+courseId);
 }
+
+function uploadFiles() {
+  // do rest request here...
+  console.log("uploading files!!", uploadedFile.value);
+}
+
+function getChangedFile(e) {
+  uploadedFile.value = null;
+  let files = e.target.files;
+  let filePath = files[0];
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    console.log(reader.result);
+    uploadedFile.value = reader.result;
+    console.log(uploadedFile.value);
+  }
+  reader.readAsDataURL(filePath);
+}
+
 </script>
+
