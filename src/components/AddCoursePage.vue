@@ -54,6 +54,20 @@
             </span>
           </v-btn>
         </td>
+          <td><v-btn block>Edit</v-btn></td>
+          <td>
+            <CustomModal title="Delete">
+              <template v-slot:modal-body>
+                <p>Are you sure you want to delete the course '{{ item.title }}'?</p>
+              </template>
+              <template v-slot:actions="isActive">
+                <v-btn
+                text="Yes"
+                @click="deleteCourse(item.courseNum); isActive.value = false"
+              ></v-btn>
+              </template>
+            </CustomModal>
+          </td>
         </tr>
       </template>
     </v-data-table-server>
@@ -62,6 +76,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import CustomModal from './CustomModal.vue'
 
 const itemsPerPage = ref(5)
 
@@ -109,5 +124,10 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 
 function addCourse() {
   console.log("Add Course clicked")
+}
+
+function deleteCourse(courseId) {
+  // do rest request here...
+  console.log("deleting: "+courseId);
 }
 </script>
