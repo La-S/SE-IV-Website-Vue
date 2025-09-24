@@ -1,11 +1,22 @@
 <template>
-  <header class="d-flex align-center justify-space-between px-4 py-2">
-    <h1 class="text-center my-0">Courses</h1>
-    <v-btn class="text-right" >Add Course</v-btn>
-    <v-btn class="text-right">Import Place Holder</v-btn>
+  <header>
+    <h1>Course Listings </h1>
+
+  <div style="display: flex; justify-content: flex-end;">
+    <v-btn>
+      <span class="material-icons" 
+            title="Click to add a new course">add
+      </span>
+    </v-btn>
+    <v-btn> 
+      <span class="material-icons"
+            title="Click to import course information from CSV file"> upload
+      </span>
+    </v-btn>
+  </div>
   </header>
 
-  <v-card class="mx-auto px-4">
+  <v-card>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="headers"
@@ -31,8 +42,18 @@
             </div>
           </td>
           <td>{{ item.description }}</td>
-          <td><v-btn block>Edit</v-btn></td>
-          <td><v-btn block>Delete</v-btn></td>
+          <td>
+            <v-btn> 
+             <span class="material-icons" 
+                   title="Click to edit the course">edit
+             </span>
+          </v-btn>
+          <v-btn> 
+            <span class="material-icons" 
+                  title="Click to delete the course">delete
+            </span>
+          </v-btn>
+        </td>
         </tr>
       </template>
     </v-data-table-server>
@@ -43,10 +64,12 @@
 import { ref } from 'vue'
 
 const itemsPerPage = ref(5)
+
 const headers = ref([
   { title: 'Course', key: 'course' },
   { title: 'Level/Hours', key: 'credits', align: 'end' },
   { title: 'Description', key: 'description' },
+  { title: 'Actions', key: 'actions' },
 ])
 
 const search = ref('')
