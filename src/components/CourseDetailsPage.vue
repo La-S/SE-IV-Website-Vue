@@ -1,0 +1,68 @@
+<template>
+  <v-container>
+    <h2 v-if="isEdit">Edit Course</h2>
+    <h2 v-else>Add New Course</h2>
+
+    <v-form ref="courseForm">
+      <v-text-field v-model="form.title" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
+      <v-text-field v-model="form.courseNum" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
+      <v-text-field v-model="form.level" :rules="[v => !!v || 'This field is required']"  label="Level"></v-text-field>
+      <v-text-field v-model.number="form.credits" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
+      <v-textarea v-model="form.description" label="Description"></v-textarea>
+
+      <v-btn v-if="isEdit" @click="saveCourse">Update Course</v-btn>
+      <v-btn v-else @click="saveCourse">Create Course</v-btn>
+      <v-btn @click="cancel" class="ml-5">cancel</v-btn>
+    </v-form>
+  </v-container>
+</template>
+
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+interface CourseForm {
+  title: string
+  courseNum: string
+  level: string
+  credits: number | string
+  description: string
+}
+
+const route = useRoute()
+const router = useRouter()
+const isEdit = ref(false)
+const courseForm = ref<HTMLFormElement | null>(null)
+
+const form = ref<CourseForm>({
+  title: '',
+  courseNum: '',
+  level: '',
+  credits: '',
+  description: ''
+})
+
+onMounted(() => {
+  if (route.params.id) {
+    isEdit.value = true
+
+    form.value = {
+      title: 'Intro to Algorithms',
+      courseNum: route.params.id as string,
+      level: '100',
+      credits: 3,
+      description: 'Placeholder'
+    }
+  }
+})
+
+function saveCourse() {
+
+  router.push({ name: 'courses' })
+}
+
+function cancel(){
+    router.push({name: 'courses'})
+}
+</script>

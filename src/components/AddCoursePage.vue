@@ -1,22 +1,19 @@
 <template>
-  <header>
-    <h1>Course Listings </h1>
+  <header class="d-flex align-center justify-space-between px-4 py-2">
+    <h1 class="text-center my-0">Courses</h1>
 
-  <div style="display: flex; justify-content: flex-end;">
-    <v-btn>
-      <span class="material-icons" 
-            title="Click to add a new course">add
-      </span>
-    </v-btn>
-    <v-btn> 
-      <span class="material-icons"
-            title="Click to import course information from CSV file"> upload
-      </span>
-    </v-btn>
-  </div>
+    <div class="d-flex gap-2">
+      <v-btn @click="addCourse">
+        <span class="material-icons" title="Add a new course">add</span>
+      </v-btn>
+
+      <v-btn>
+        <span class="material-icons" title="Import courses from CSV">upload</span>
+      </v-btn>
+    </div>
   </header>
 
-  <v-card>
+  <v-card class="mx-auto px-4">
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="headers"
@@ -28,43 +25,38 @@
       @update:options="loadItems"
     >
       <template #body="{ items }">
-        <tr v-for="item in items" :key="item.id">
+        <tr v-for="item in items" :key="item.courseNum">
           <td>
             <strong>{{ item.title }}</strong>
-            <div class="text-caption text-grey">
-              {{ item.courseNum }}
-            </div>
+            <div class="text-caption text-grey">{{ item.courseNum }}</div>
           </td>
+
           <td class="text-right">
             <strong>{{ item.level }}</strong>
-            <div class="text-caption text-grey">
-              {{ item.credits + " Hrs" }}
-            </div>
+            <div class="text-caption text-grey">{{ item.credits + " Hrs" }}</div>
           </td>
+
           <td>{{ item.description }}</td>
-          <td>
-            <v-btn> 
-             <span class="material-icons" 
-                   title="Click to edit the course">edit
-             </span>
-          </v-btn>
-          <v-btn> 
-            <span class="material-icons" 
-                  title="Click to delete the course">delete
-            </span>
-          </v-btn>
-        </td>
-          <td><v-btn block>Edit</v-btn></td>
-          <td>
+
+          <td class="d-flex gap-2">
+            <v-btn @click="editCourse(item)">
+              <span class="material-icons" title="Edit course">edit</span>
+            </v-btn>
+
             <CustomModal title="Delete">
               <template v-slot:modal-body>
                 <p>Are you sure you want to delete the course '{{ item.title }}'?</p>
               </template>
               <template v-slot:actions="isActive">
                 <v-btn
-                text="Yes"
-                @click="deleteCourse(item.courseNum); isActive.value = false"
-              ></v-btn>
+                  text
+                  @click="deleteCourse(item); isActive.value = false"
+                >Yes</v-btn>
+              </template>
+              <template v-slot:trigger>
+                <v-btn>
+                  <span class="material-icons" title="Delete course">delete</span>
+                </v-btn>
               </template>
             </CustomModal>
           </td>
@@ -76,8 +68,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import CustomModal from './CustomModal.vue'
 
+const router = useRouter()
 const itemsPerPage = ref(5)
 
 const headers = ref([
@@ -123,11 +117,14 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 
 function addCourse() {
-  console.log("Add Course clicked")
+  router.push({ name: 'course-new' })
 }
 
-function deleteCourse(courseId) {
-  // do rest request here...
-  console.log("deleting: "+courseId);
+function editCourse(course) {
+  router.push({ name: 'course-edit', params: { id: course.courseNum } })
+}
+
+function deleteCourse(course) {
+  console.log("Delete Course clicked:", course)
 }
 </script>
