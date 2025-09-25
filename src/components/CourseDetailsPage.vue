@@ -4,10 +4,10 @@
     <h2 v-else>Add New Course</h2>
 
     <v-form ref="courseForm">
-      <v-text-field v-model="form.title" label="Title"></v-text-field>
-      <v-text-field v-model="form.courseNum" label="Course Number"></v-text-field>
-      <v-text-field v-model="form.level" label="Level"></v-text-field>
-      <v-text-field v-model.number="form.credits" label="Credits" type="number"></v-text-field>
+      <v-text-field v-model="form.title" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
+      <v-text-field v-model="form.courseNum" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
+      <v-text-field v-model="form.level" :rules="[v => !!v || 'This field is required']"  label="Level"></v-text-field>
+      <v-text-field v-model.number="form.credits" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
       <v-textarea v-model="form.description" label="Description"></v-textarea>
 
       <v-btn v-if="isEdit" @click="saveCourse">Update Course</v-btn>
