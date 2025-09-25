@@ -12,7 +12,7 @@
 
       <v-btn v-if="isEdit" @click="saveCourse">Update Course</v-btn>
       <v-btn v-else @click="saveCourse">Create Course</v-btn>
-      <v-btn @click="cancel">cancel</v-btn>
+      <v-btn @click="cancel" class="ml-5">cancel</v-btn>
     </v-form>
   </v-container>
 </template>
@@ -52,7 +52,7 @@ onMounted(() => {
       courseNum: route.params.id as string,
       level: '100',
       credits: 3,
-      description: 'Example prefilled data'
+      description: 'Placeholder'
     }
   }
 })
