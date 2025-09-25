@@ -12,6 +12,7 @@
 
       <v-btn v-if="isEdit" @click="saveCourse">Update Course</v-btn>
       <v-btn v-else @click="saveCourse">Create Course</v-btn>
+      <v-btn @click="cancel">cancel</v-btn>
     </v-form>
   </v-container>
 </template>
@@ -57,12 +58,11 @@ onMounted(() => {
 })
 
 function saveCourse() {
-  if (isEdit.value) {
-    console.log("Update Course:", form.value)
-  } else {
-    console.log("Create Course:", form.value)
-  }
 
   router.push({ name: 'courses' })
+}
+
+function cancel(){
+    router.push({name: 'courses'})
 }
 </script>
