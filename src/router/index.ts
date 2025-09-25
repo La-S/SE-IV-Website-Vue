@@ -1,16 +1,21 @@
 /**
  * router/index.ts
  *
- * Automatic routes for `./src/pages/*.vue`
+ * Manual routes for pages
  */
 
-// Composables
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from 'vue-router/auto-routes'
 import type { RouteRecordRaw } from 'vue-router'
 
 import AddCoursePage from '@/components/AddCoursePage.vue'
 import CourseDetailsPage from '@/components/CourseDetailsPage.vue'
+
+const routes: RouteRecordRaw[] = [
+  { path: '/', name: 'home', component: AddCoursePage }, 
+  { path: '/courses', name: 'courses', component: AddCoursePage },
+  { path: '/courses/new', name: 'course-new', component: CourseDetailsPage },
+  { path: '/courses/:id', name: 'course-edit', component: CourseDetailsPage, props: true },
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,11 +40,5 @@ router.onError((err, to) => {
 router.isReady().then(() => {
   localStorage.removeItem('vuetify:dynamic-reload')
 })
-const routes: RouteRecordRaw[] = [
-  { path: '/', name: 'home', component: AddCoursePage }, 
-  { path: '/courses', name: 'courses', component: AddCoursePage },
-  { path: '/courses/new', name: 'course-new', component: CourseDetailsPage },
-  { path: '/courses/:id', name: 'course-edit', component: CourseDetailsPage, props: true },
-]
 
 export default router
