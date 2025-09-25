@@ -50,7 +50,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const itemsPerPage = ref(5)
 const headers = ref([
   { title: 'Course', key: 'course' },
@@ -94,11 +96,11 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 
 function addCourse() {
-  console.log("Add Course clicked")
+  router.push({ name: 'course-new' })
 }
 
 function editCourse(course) {
-  console.log("Edit Course clicked:", course)
+  router.push({ name: 'course-edit', params: { id: course.courseNum } })
 }
 
 function deleteCourse(course) {
