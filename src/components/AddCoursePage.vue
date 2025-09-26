@@ -2,19 +2,7 @@
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
     <v-btn class="text-right" >Add Course</v-btn>
-    <CustomModal title="Import Data" @modal-closed="uploadedFile = null">
-      <template v-slot:modal-body>
-        <p>Please upload a file in CSV format.</p>
-        <input type="file" accept=".csv" @change="getChangedFile"/>
-      </template>
-      <template v-slot:actions="isActive" >
-        <v-btn
-        text="Upload"
-        @click="uploadFiles(); isActive.value = false; uploadedFile = null;"
-        :disabled="uploadedFile == null"
-      ></v-btn>
-      </template>
-    </CustomModal>
+    <v-btn class="text-right" @click="isUploadingCSV=true">Import Data</v-btn>
   </header>
 
   <v-card class="mx-auto px-4">
@@ -45,27 +33,58 @@
           <td>{{ item.description }}</td>
           <td><v-btn block>Edit</v-btn></td>
           <td>
-            <CustomModal title="Delete">
-              <template v-slot:modal-body>
-                <p>Are you sure you want to delete the course '{{ item.title }}'?</p>
-              </template>
-              <template v-slot:actions="isActive">
-                <v-btn
-                text="Yes"
-                @click="deleteCourse(item.courseNum); isActive.value = false"
-              ></v-btn>
-              </template>
-            </CustomModal>
+            <v-btn block @click="selectedCourse=item; isCourseSelected = true;">Delete</v-btn>
           </td>
         </tr>
       </template>
     </v-data-table-server>
   </v-card>
+
+  <!-- Delete Modal -->
+  <v-dialog max-width="500px" @click:outside="isCourseSelected = false" v-model="isCourseSelected">
+      <v-card title="Delete?">
+        <v-card-text>
+          <p>Are you sure you want to delete the course '{{ selectedCourse.title }}'?</p>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn
+            text="Delete"
+            @click="deleteCourse(selectedCourse.courseNum); isCourseSelected = false"
+          ></v-btn>
+          <v-btn
+            text="Cancel"
+            @click="isCourseSelected = false;"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog>
+
+  <!-- CSV Upload Modal -->
+  <v-dialog max-width="500px" @click:outside="uploadedFile = null; isUploadingCSV = false" v-model="isUploadingCSV">
+      <v-card title="Import Data">
+        <v-card-text>
+          <p>Please upload a file in CSV format. {{ dialog }}</p>
+          <input type="file" accept=".csv" @change="getChangedFile"/>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn
+            text="Upload"
+            @click="uploadFiles(); uploadedFile = null; isUploadingCSV = false"
+            :disabled="uploadedFile == null"
+          ></v-btn>
+          <v-btn
+            text="Cancel"
+            @click="uploadedFile = null; isUploadingCSV = false"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import CustomModal from './CustomModal.vue'
 
 let uploadedFile = ref(null);
 const itemsPerPage = ref(5)
@@ -79,6 +98,9 @@ const search = ref('')
 const serverItems = ref([])
 const loading = ref(true)
 const totalItems = ref(0)
+const selectedCourse = ref(null);
+const isCourseSelected = ref(false);
+const isUploadingCSV = ref(false);
 
 async function fetchCourses({ page, itemsPerPage }) {
   return new Promise(resolve => {
