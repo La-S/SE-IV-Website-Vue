@@ -1,8 +1,15 @@
 <template>
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
-    <v-btn class="text-right" >Add Course</v-btn>
-    <v-btn class="text-right" @click="isUploadingCSV=true">Import Data</v-btn>
+    <div class="d-flex gap-2">
+      <v-btn @click="addCourse">
+        <span class="material-icons" title="Add a new course">add</span>
+      </v-btn>
+
+      <v-btn @click="isUploadingCSV=true">
+        <span class="material-icons" title="Import courses from CSV">upload</span>
+      </v-btn>
+    </div>
   </header>
 
   <v-card class="mx-auto px-4">
@@ -17,23 +24,26 @@
       @update:options="loadItems"
     >
       <template #body="{ items }">
-        <tr v-for="item in items" :key="item.id">
+        <tr v-for="item in items" :key="item.courseNum">
           <td>
             <strong>{{ item.title }}</strong>
-            <div class="text-caption text-grey">
-              {{ item.courseNum }}
-            </div>
+            <div class="text-caption text-grey">{{ item.courseNum }}</div>
           </td>
+
           <td class="text-right">
             <strong>{{ item.level }}</strong>
-            <div class="text-caption text-grey">
-              {{ item.credits + " Hrs" }}
-            </div>
+            <div class="text-caption text-grey">{{ item.credits + " Hrs" }}</div>
           </td>
+
           <td>{{ item.description }}</td>
-          <td><v-btn block>Edit</v-btn></td>
-          <td>
-            <v-btn block @click="selectedCourse=item; isCourseSelected = true;">Delete</v-btn>
+          <td class="d-flex gap-2">
+            <v-btn @click="editCourse(item)">
+              <span class="material-icons" title="Edit course">edit</span>
+            </v-btn>
+            
+            <v-btn @click="selectedCourse=item; isCourseSelected = true;">
+              <span class="material-icons" title="Delete course">delete</span>
+            </v-btn>
           </td>
         </tr>
       </template>
@@ -85,13 +95,19 @@
 
 <script setup>
 import { ref } from 'vue'
-
+ 
 let uploadedFile = ref(null);
+import { useRouter } from 'vue-router'
+import CustomModal from './CustomModal.vue'
+
+const router = useRouter()
 const itemsPerPage = ref(5)
+
 const headers = ref([
   { title: 'Course', key: 'course' },
   { title: 'Level/Hours', key: 'credits', align: 'end' },
   { title: 'Description', key: 'description' },
+  { title: 'Actions', key: 'actions' },
 ])
 
 const search = ref('')
@@ -133,12 +149,15 @@ function loadItems({ page, itemsPerPage, sortBy }) {
 }
 
 function addCourse() {
-  console.log("Add Course clicked")
+  router.push({ name: 'course-new' })
 }
 
-function deleteCourse(courseId) {
-  // do rest request here...
-  console.log("deleting: "+courseId);
+function editCourse(course) {
+  router.push({ name: 'course-edit', params: { id: course.courseNum } })
+}
+
+function deleteCourse(course) {
+  console.log("Delete Course clicked:", course)
 }
 
 function uploadFiles() {

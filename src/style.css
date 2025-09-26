@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Crimson Text', serif;
+  background-color: #f7f7f7; 
+  color: #3a3731;           
+  line-height: 1.6;
+  padding: 20px;
+}
+
+header {
+  padding: 20px; 
+  background-color: #f7f7f7; 
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #3a3731;
+  font-weight: 600;
+}
+
+button {
+  background-color: #7da2a9; 
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1rem;
+  margin: 0.3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  font-family: 'Crimson Text', serif;
+}
+
+button:hover {
+  background-color: #6a8d93; 
+}
+
+button.outline {
+  background-color: transparent;
+  color: #7da2a9;
+  border: 2px solid #7da2a9;
+}
+
+button.outline:hover {
+  background-color: #7da2a9;
+  color: #fff;
+}
+
+.material-icons {
+  color: #7da2a9;        
+}
+
+.v-data-table tbody tr:nth-child(even) {
+  background-color: #ececec; 
+}
+
+.v-data-table thead th {
+  font-weight: 700 !important;
+  color: #ececec !important; 
+  background-color: #7da2a9
+}

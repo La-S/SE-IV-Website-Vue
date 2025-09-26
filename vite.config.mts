@@ -3,6 +3,7 @@ import Components from 'unplugin-vue-components/vite'
 import Vue from '@vitejs/plugin-vue'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import Fonts from 'unplugin-fonts/vite'
+import VueRouter from 'unplugin-vue-router/vite'
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -11,6 +12,9 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    VueRouter({
+      dts: 'src/typed-router.d.ts',
+    }),
     Vue({
       template: { transformAssetUrls },
     }),
@@ -30,7 +34,13 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    exclude: ['vuetify'],
+    exclude: [
+      'vuetify',
+      'vue-router',
+      'unplugin-vue-router/runtime',
+      'unplugin-vue-router/data-loaders',
+      'unplugin-vue-router/data-loaders/basic',
+    ],
   },
   define: { 'process.env': {} },
   resolve: {
