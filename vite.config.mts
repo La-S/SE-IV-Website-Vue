@@ -7,7 +7,10 @@ import VueRouter from 'unplugin-vue-router/vite'
 
 // Utilities
 import { defineConfig } from 'vite'
+
 import { fileURLToPath, URL } from 'node:url'
+const baseURL =
+    process.env.APP_ENV === "development" ? "/" : "seiv2025/p2/t3";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -60,4 +63,5 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  base: baseURL,
 })
