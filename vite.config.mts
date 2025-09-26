@@ -9,8 +9,8 @@ import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
 
 import { fileURLToPath, URL } from 'node:url'
-const baseURL =
-    process.env.APP_ENV === "development" ? "/" : "seiv2025/p2/t3";
+
+const baseURL = process.env.NODE_ENV === "development" ? "/" : "/seiv2025/p2/t3";
 
 // https://vitejs.dev/config/
 export default defineConfig({
