@@ -98,7 +98,6 @@ import { ref } from 'vue'
  
 let uploadedFile = ref(null);
 import { useRouter } from 'vue-router'
-import CustomModal from './CustomModal.vue'
 
 const router = useRouter()
 const itemsPerPage = ref(5)
