@@ -1,13 +1,12 @@
 <template>
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
-
     <div class="d-flex gap-2">
       <v-btn @click="addCourse">
         <span class="material-icons" title="Add a new course">add</span>
       </v-btn>
 
-      <v-btn>
+      <v-btn @click="isUploadingCSV=true">
         <span class="material-icons" title="Import courses from CSV">upload</span>
       </v-btn>
     </div>
@@ -37,39 +36,68 @@
           </td>
 
           <td>{{ item.description }}</td>
-
           <td class="d-flex gap-2">
             <v-btn @click="editCourse(item)">
               <span class="material-icons" title="Edit course">edit</span>
             </v-btn>
-
-            <CustomModal title="Delete">
-              <template v-slot:modal-body>
-                <p>Are you sure you want to delete the course '{{ item.title }}'?</p>
-              </template>
-              <template v-slot:actions="isActive">
-                <v-btn
-                  text
-                  @click="deleteCourse(item); isActive.value = false"
-                >Yes</v-btn>
-              </template>
-              <template v-slot:trigger>
-                <v-btn>
-                  <span class="material-icons" title="Delete course">delete</span>
-                </v-btn>
-              </template>
-            </CustomModal>
+            
+            <v-btn @click="selectedCourse=item; isCourseSelected = true;">
+              <span class="material-icons" title="Delete course">delete</span>
+            </v-btn>
           </td>
         </tr>
       </template>
     </v-data-table-server>
   </v-card>
+
+  <!-- Delete Modal -->
+  <v-dialog max-width="500px" @click:outside="isCourseSelected = false" v-model="isCourseSelected">
+      <v-card title="Delete?">
+        <v-card-text>
+          <p>Are you sure you want to delete the course '{{ selectedCourse.title }}'?</p>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn
+            text="Delete"
+            @click="deleteCourse(selectedCourse.courseNum); isCourseSelected = false"
+          ></v-btn>
+          <v-btn
+            text="Cancel"
+            @click="isCourseSelected = false;"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog>
+
+  <!-- CSV Upload Modal -->
+  <v-dialog max-width="500px" @click:outside="uploadedFile = null; isUploadingCSV = false" v-model="isUploadingCSV">
+      <v-card title="Import Data">
+        <v-card-text>
+          <p>Please upload a file in CSV format. {{ dialog }}</p>
+          <input type="file" accept=".csv" @change="getChangedFile"/>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn
+            text="Upload"
+            @click="uploadFiles(); uploadedFile = null; isUploadingCSV = false"
+            :disabled="uploadedFile == null"
+          ></v-btn>
+          <v-btn
+            text="Cancel"
+            @click="uploadedFile = null; isUploadingCSV = false"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+ 
+let uploadedFile = ref(null);
 import { useRouter } from 'vue-router'
-import CustomModal from './CustomModal.vue'
 
 const router = useRouter()
 const itemsPerPage = ref(5)
@@ -85,6 +113,9 @@ const search = ref('')
 const serverItems = ref([])
 const loading = ref(true)
 const totalItems = ref(0)
+const selectedCourse = ref(null);
+const isCourseSelected = ref(false);
+const isUploadingCSV = ref(false);
 
 async function fetchCourses({ page, itemsPerPage }) {
   return new Promise(resolve => {
@@ -127,4 +158,25 @@ function editCourse(course) {
 function deleteCourse(course) {
   console.log("Delete Course clicked:", course)
 }
+
+function uploadFiles() {
+  // do rest request here...
+  console.log("uploading files!!", uploadedFile.value);
+}
+
+function getChangedFile(e) {
+  uploadedFile.value = null;
+  let files = e.target.files;
+  let filePath = files[0];
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    console.log(reader.result);
+    uploadedFile.value = reader.result;
+    console.log(uploadedFile.value);
+  }
+  reader.readAsDataURL(filePath);
+}
+
 </script>
+
