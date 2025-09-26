@@ -5,7 +5,6 @@
  */
 
 // Plugins
-import router from '@/router'
 import vuetify from './vuetify'
 import router from '@/router'
 // Types
