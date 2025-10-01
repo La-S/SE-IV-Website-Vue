@@ -4,7 +4,7 @@
  * Manual routes for pages
  */
 
-import { createRouter, createWebHistory } from 'vue-router'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
 import AddCoursePage from '@/components/AddCoursePage.vue'
@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createMemoryHistory(),
   routes,
 })
 
