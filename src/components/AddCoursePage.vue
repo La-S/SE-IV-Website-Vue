@@ -80,9 +80,9 @@
     @click:outside="uploadedFile = null; isUploadingCSV = false"
     v-model="isUploadingCSV">
 
-    <v-card title="Import Data">
+    <v-card :title='uploadedFile != null ? "😭 We told you not to upload a CSV... 😭" : "CSV UPLOADS ARE NOT SUPPORTED"' :style="uploadedFile != null ? 'animation-name: hourglass; animation-iteration-count: infinite; animation-duration: 1s; ': ''">
       <v-card-text>
-        <p>Please upload a file in CSV format.</p>
+        <p>Please DO NOT upload a file in CSV format.</p>
         <input type="file" accept=".csv" @change="getChangedFile" />
       </v-card-text>
 

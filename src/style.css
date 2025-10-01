@@ -59,3 +59,5 @@ button.outline:hover {
   color: #ececec !important; 
   background-color: #7da2a9
 }
+
+@keyframes hourglass { from {rotate: 0deg;} to {rotate: 360deg;}};
