@@ -63,7 +63,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      '/coursesapi': {
+      '/course-t3': {
         target: 'http://localhost:3013',
         changeOrigin: true,
         secure: false,
