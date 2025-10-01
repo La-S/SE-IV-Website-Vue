@@ -126,7 +126,7 @@ const uploadedFile = ref(null);
 
 async function fetchCourses({ page, itemsPerPage }) {
   try {
-    const response = await fetch("/coursesapi/courses");
+    const response = await fetch("/course-t3/courses");
     if (!response.ok) throw new Error("Failed to fetch courses");
 
     const data = await response.json();
@@ -170,7 +170,7 @@ function editCourse(course) {
 
 async function deleteCourse(course) {
   try {
-    const response = await fetch(`/coursesapi/course/${course.id}`, {
+    const response = await fetch(`/course-t3/course/${course.id}`, {
       method: "DELETE",
     });
     if (!response.ok) throw new Error("Delete failed");
@@ -186,7 +186,7 @@ async function uploadFiles() {
     const formData = new FormData();
     formData.append("file", uploadedFile.value);
 
-    const response = await fetch("/coursesapi/course/upload", {
+    const response = await fetch("/course-t3/course/upload", {
       method: "POST",
       body: formData,
     });
