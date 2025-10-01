@@ -6,7 +6,7 @@
     <v-form ref="courseForm">
       <v-text-field v-model="form.department" :rules="[v => !!v || 'This field is required']" label="Department"></v-text-field>
       <v-text-field v-model="form.title" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
-      <v-text-field v-model="form.courseNum" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
+      <v-text-field v-model="form.number" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
       <v-text-field v-model="form.level" :rules="[v => !!v || 'This field is required']"  label="Level"></v-text-field>
       <v-text-field v-model.number="form.credits" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
       <v-textarea v-model="form.description" label="Description"></v-textarea>
@@ -24,7 +24,7 @@ import { useRoute, useRouter } from 'vue-router'
 interface CourseForm {
   department: string
   title: string
-  courseNum: string
+  number: string
   level: string
   credits: number | string
   description: string
@@ -38,7 +38,7 @@ const courseForm = ref<HTMLFormElement | null>(null)
 const form = ref<CourseForm>({
   department: '',
   title: '',
-  courseNum: '',
+  number: '',
   level: '',
   credits: '',
   description: ''
@@ -58,7 +58,7 @@ onMounted(async() => {
     form.value = {
         department: course.department,
         title: course.title,
-        courseNum: course.courseNum,
+        number: course.courseNum,
         level: course.level,
         credits: course.credits,
         description: course.description
@@ -72,7 +72,7 @@ onMounted(async() => {
 })
 
   async function saveCourse() {
-  if (!form.value.department || form.value.title || !form.value.courseNum || !form.value.level || !form.value.credits) {
+  if (!form.value.department || !form.value.title || !form.value.number || !form.value.level || !form.value.credits) {
     alert("Please fill out all required fields.");
     return;
   }
