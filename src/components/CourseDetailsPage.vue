@@ -94,7 +94,6 @@ onMounted(async() => {
 
     if (!response.ok) throw new Error("Failed to save course");
 
-    alert(isEdit.value ? "Course updated successfully!" : "Course created successfully!");
     router.push({ name: "courses" });
   } catch (err) {
     console.error(err);
