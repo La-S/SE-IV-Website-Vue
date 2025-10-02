@@ -91,7 +91,7 @@ onMounted(async() => {
       body: JSON.stringify(form.value)
     });
 
-    if (response.status == 400) throw new Error(`Course with number ${form.value.number} already exists. Please change the course number`)
+    if (response.status == 409) throw new Error(`Course with number ${form.value.number} already exists. Please change the course number`)
     if (!response.ok) throw new Error("Failed to save course");
 
     router.push({ name: "courses" });
