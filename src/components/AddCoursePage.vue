@@ -12,7 +12,7 @@
     </div>
   </header>
 
-  <v-card class="mx-auto px-4">
+  <v-card>
     <v-data-table-server
       v-model:items-per-page="itemsPerPage"
       :headers="headers"

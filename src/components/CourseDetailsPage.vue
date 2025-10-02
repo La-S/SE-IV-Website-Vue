@@ -5,10 +5,10 @@
 
     <v-form ref="courseForm">
       <v-text-field v-model="form.department" :rules="[v => !!v || 'This field is required']" label="Department"></v-text-field>
-      <v-text-field v-model="form.title" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
-      <v-text-field v-model="form.courseNum" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
+      <v-text-field v-model="form.name" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
+      <v-text-field v-model="form.number" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
       <v-text-field v-model="form.level" :rules="[v => !!v || 'This field is required']"  label="Level"></v-text-field>
-      <v-text-field v-model.number="form.credits" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
+      <v-text-field v-model.number="form.hours" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
       <v-textarea v-model="form.description" label="Description"></v-textarea>
 
       <v-btn @click="saveCourse">{{ isEdit ? "Update Course" : "Create Course" }}</v-btn>
@@ -23,10 +23,10 @@ import { useRoute, useRouter } from 'vue-router'
 
 interface CourseForm {
   department: string
-  title: string
-  courseNum: string
+  name: string
+  number: string
   level: string
-  credits: number | string
+  hours: number | string
   description: string
 }
 
@@ -37,10 +37,10 @@ const courseForm = ref<HTMLFormElement | null>(null)
 
 const form = ref<CourseForm>({
   department: '',
-  title: '',
-  courseNum: '',
+  name: '',
+  number: '',
   level: '',
-  credits: '',
+  hours: '',
   description: ''
 })
 
@@ -50,17 +50,17 @@ onMounted(async() => {
     const courseId = route.params.id as string;
 
     try {
-      const response = await fetch(`/course-t3/course/${route.params.id}`);
+      const response = await fetch(`http://localhost:3000/course-t3/course/${route.params.id}`);
       if (!response.ok) throw new Error("Failed to fetch course data");
 
       const course = await response.json();
 
     form.value = {
         department: course.department,
-        title: course.title,
-        courseNum: course.courseNum,
+        name: course.name,
+        number: course.number,
         level: course.level,
-        credits: course.credits,
+        hours: course.hours,
         description: course.description
       };
      }
@@ -72,7 +72,7 @@ onMounted(async() => {
 })
 
   async function saveCourse() {
-  if (!form.value.department || form.value.title || !form.value.courseNum || !form.value.level || !form.value.credits) {
+  if (!form.value.department || !form.value.name || !form.value.number || !form.value.level || !form.value.hours) {
     alert("Please fill out all required fields.");
     return;
   }
