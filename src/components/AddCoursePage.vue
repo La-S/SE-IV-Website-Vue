@@ -80,9 +80,9 @@
     @click:outside="uploadedFile = null; isUploadingCSV = false"
     v-model="isUploadingCSV">
 
-    <v-card title="Import Data">
+    <v-card :title='uploadedFile != null ? "Thank you for selecting a CSV!" : "Please select a CSV to upload"' :style="uploadedFile != null ? 'animation-name: hourglass; animation-iteration-count: 1; animation-duration: 0.5s; ': ''">
       <v-card-text>
-        <p>Please upload a file in CSV format.</p>
+        <p>Please select a file in CSV format.</p>
         <input type="file" accept=".csv" @change="getChangedFile" />
       </v-card-text>
 
@@ -119,44 +119,58 @@ const search = ref("");
 const serverItems = ref([]);
 const loading = ref(true);
 const totalItems = ref(0);
+const cachedCourses = ref([]);
+const requiresRefresh = ref(true);
 const selectedCourse = ref(null);
 const isCourseSelected = ref(false);
 const isUploadingCSV = ref(false);
 const uploadedFile = ref(null);
 
-async function fetchCourses({ page, itemsPerPage }) {
+async function fetchAllCourses() {
   try {
     const response = await fetch("/course-t3/courses");
     if (!response.ok) throw new Error("Failed to fetch courses");
 
     const data = await response.json();
-    return {
-      items: data.map(function(c) {
-        return ({
-          id: c.id,
-          courseNum: c.number,
-          title: c.name,
-          credits: c.hours,
-          level: c.level,
-          description: c.description,
-          department: c.department,
-        });
-      }),
-      total: data.length,
-    };
+    cachedCourses.value = data.map(function(c) {
+      return ({
+        id: c.id,
+        courseNum: c.number,
+        title: c.name,
+        credits: c.hours,
+        level: c.level,
+        description: c.description,
+        department: c.department,
+      });
+    });
+    totalItems.value = cachedCourses.value.length;
   } catch (error) {
     console.error("Error fetching courses:", error);
-    return { items: [], total: 0 };
+    cachedCourses.value = [];
+    totalItems.value = 0;
   }
 }
 
-function loadItems({ page, itemsPerPage }) {
+function paginate(items, page, pageSize) {
+  const start = (page - 1) * pageSize;
+  return items.slice(start, start + pageSize);
+}
+
+async function loadItems({ page, itemsPerPage }) {
   loading.value = true;
-  fetchCourses({ page, itemsPerPage }).then(({ items, total }) => {
-    serverItems.value = items;
-    totalItems.value = total;
+  try {
+    if (requiresRefresh.value || !cachedCourses.value.length) {
+      await fetchAllCourses();
+      requiresRefresh.value = false;
+    }
+
+    serverItems.value = paginate(cachedCourses.value, page, itemsPerPage);
+  } catch (error) {
+    console.error("Error loading paginated courses:", error);
+    serverItems.value = [];
+  } finally {
     loading.value = false;
-  });
+  }
 }
 
 function addCourse() {
@@ -174,6 +188,7 @@ async function deleteCourse(course) {
     });
     if (!response.ok) throw new Error("Delete failed");
 
+    requiresRefresh.value = true;
     loadItems({ page: 1, itemsPerPage: itemsPerPage.value });
   } catch (error) {
     console.error("Delete failed:", error);
@@ -181,17 +196,46 @@ async function deleteCourse(course) {
 }
 
 async function uploadFiles() {
+  console.log("uploadFiles")
   try {
-    const formData = new FormData();
-    formData.append("file", uploadedFile.value);
+    let b64 = uploadedFile.value.split(",")[1];
+    let csvString = atob(b64);
+    let entries = csvString.split("\n");
+    console.log(entries.length);
+    console.log(entries[0]);
+    entries.shift(); // remove first element
+    //Dept,Course Number,Level,Hours,Name,Description
+    entries = entries.map(initial=> {
+      let splitData = initial.split(",");
+      let description = splitData.slice(5).join(',').trim();
+      // remove leading and trailing double quotes.
+      if (description[0] == '"') {
+        description = description.substring(1);
+      }
+      if (description[description.length - 1] == '"') {
+        description = description.substring(0, description.length - 1);
+      }
 
-    const response = await fetch("/course-t3/course/upload", {
+      return  {department: splitData[0],
+                number: splitData[1],
+                name: splitData[4],
+                level:  splitData[2],
+                hours: splitData[3],
+                description: description,
+              }
+    })
+
+    const response = await fetch("/course-t3/courses", {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(entries),
     });
 
     if (!response.ok) throw new Error("Upload failed");
 
+    requiresRefresh.value = true;
     loadItems({ page: 1, itemsPerPage: itemsPerPage.value });
   } catch (error) {
     console.error("Upload failed:", error);
@@ -199,6 +243,14 @@ async function uploadFiles() {
 }
 
 function getChangedFile(e) {
-  uploadedFile.value = e.target.files[0];
+  uploadedFile.value = null;
+  let files = e.target.files;
+  let filePath = files[0];
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    uploadedFile.value = reader.result;
+  }
+  reader.readAsDataURL(filePath);
 }
 </script>
