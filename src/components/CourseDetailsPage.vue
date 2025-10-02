@@ -50,7 +50,7 @@ onMounted(async() => {
     const courseId = route.params.id as string;
 
     try {
-      const response = await fetch(`http://localhost:3000/course-t3/course/${route.params.id}`);
+      const response = await fetch(`/course-t3/course/${route.params.id}`);
       if (!response.ok) throw new Error("Failed to fetch course data");
 
       const course = await response.json();
@@ -72,7 +72,7 @@ onMounted(async() => {
 })
 
   async function saveCourse() {
-  if (!form.value.department || form.value.name || !form.value.number || !form.value.level || !form.value.hours) {
+  if (!form.value.department || !form.value.name || !form.value.number || !form.value.level || !form.value.hours) {
     alert("Please fill out all required fields.");
     return;
   }
