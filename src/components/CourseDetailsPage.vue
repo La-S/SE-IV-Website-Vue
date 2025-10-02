@@ -72,7 +72,7 @@ onMounted(async() => {
 })
 
   async function saveCourse() {
-  if (!form.value.department || !form.value.name || !form.value.number || !form.value.level || !form.value.hours) {
+  if (!form.value.department || form.value.name || !form.value.number || !form.value.level || !form.value.hours) {
     alert("Please fill out all required fields.");
     return;
   }
