@@ -80,9 +80,9 @@
     @click:outside="uploadedFile = null; isUploadingCSV = false"
     v-model="isUploadingCSV">
 
-    <v-card :title='uploadedFile != null ? "😭 We told you not to upload a CSV... 😭" : "CSV UPLOADS ARE NOT SUPPORTED"' :style="uploadedFile != null ? 'animation-name: hourglass; animation-iteration-count: infinite; animation-duration: 1s; ': ''">
+    <v-card :title='uploadedFile != null ? "Thank you for selecting a CSV!" : "Please select a CSV to upload"' :style="uploadedFile != null ? 'animation-name: hourglass; animation-iteration-count: 1; animation-duration: 0.5s; ': ''">
       <v-card-text>
-        <p>Please DO NOT upload a file in CSV format.</p>
+        <p>Please select a file in CSV format.</p>
         <input type="file" accept=".csv" @change="getChangedFile" />
       </v-card-text>
 
@@ -182,13 +182,41 @@ async function deleteCourse(course) {
 }
 
 async function uploadFiles() {
+  console.log("uploadFiles")
   try {
-    const formData = new FormData();
-    formData.append("file", uploadedFile.value);
+    let b64 = uploadedFile.value.split(",")[1];
+    let csvString = atob(b64);
+    let entries = csvString.split("\n");
+    console.log(entries.length);
+    console.log(entries[0]);
+    entries.shift(); // remove first element
+    //Dept,Course Number,Level,Hours,Name,Description
+    entries = entries.map(initial=> {
+      let splitData = initial.split(",");
+      let description = splitData.slice(5).join(',').trim();
+      // remove leading and trailing double quotes.
+      if (description[0] == '"') {
+        description = description.substring(1);
+      }
+      if (description[description.length - 1] == '"') {
+        description = description.substring(0, description.length - 1);
+      }
 
-    const response = await fetch("/course-t3/course/upload", {
+      return  {department: splitData[0],
+                number: splitData[1],
+                name: splitData[4],
+                level:  splitData[2],
+                hours: splitData[3],
+                description: description,
+              }
+    })
+
+    const response = await fetch("/course-t3/courses", {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(entries),
     });
 
     if (!response.ok) throw new Error("Upload failed");
@@ -200,6 +228,15 @@ async function uploadFiles() {
 }
 
 function getChangedFile(e) {
-  uploadedFile.value = e.target.files[0];
+  uploadedFile.value = null;
+  let files = e.target.files;
+  let filePath = files[0];
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    uploadedFile.value = reader.result;
+  }
+  reader.readAsDataURL(filePath);
 }
+
 </script>
