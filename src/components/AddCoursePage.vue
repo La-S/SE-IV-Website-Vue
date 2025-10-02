@@ -206,7 +206,7 @@ async function uploadFiles() {
                 number: splitData[1],
                 name: splitData[4],
                 level:  splitData[2],
-                hours: splitData[3] == "P" ? 0 : splitData[3],
+                hours: splitData[3],
                 description: description,
               }
     })
