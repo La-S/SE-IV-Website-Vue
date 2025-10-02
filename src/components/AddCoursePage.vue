@@ -82,7 +82,7 @@
 
     <v-card :title='uploadedFile != null ? "Thank you for selecting a CSV!" : "Please select a CSV to upload"' :style="uploadedFile != null ? 'animation-name: hourglass; animation-iteration-count: 1; animation-duration: 0.5s; ': ''">
       <v-card-text>
-        <p>Please upload a file in CSV format.</p>
+        <p>Please select a file in CSV format.</p>
         <input type="file" accept=".csv" @change="getChangedFile" />
       </v-card-text>
 
