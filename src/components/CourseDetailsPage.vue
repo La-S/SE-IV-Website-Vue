@@ -83,7 +83,6 @@ onMounted(async() => {
   ? `/course-t3/course/${route.params.id}`
   : `/course-t3/course`;
     const method = isEdit.value ? "PUT" : "POST";
-    console.log(url, method, form.value);
     const response = await fetch(url, {
       method,
       headers: {

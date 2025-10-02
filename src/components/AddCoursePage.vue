@@ -130,7 +130,6 @@ async function fetchCourses({ page, itemsPerPage }) {
     if (!response.ok) throw new Error("Failed to fetch courses");
 
     const data = await response.json();
-    console.log(data);
     return {
       items: data.map(function(c) {
         return ({
