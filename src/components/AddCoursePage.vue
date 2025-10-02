@@ -119,45 +119,58 @@ const search = ref("");
 const serverItems = ref([]);
 const loading = ref(true);
 const totalItems = ref(0);
+const cachedCourses = ref([]);
+const requiresRefresh = ref(true);
 const selectedCourse = ref(null);
 const isCourseSelected = ref(false);
 const isUploadingCSV = ref(false);
 const uploadedFile = ref(null);
 
-async function fetchCourses({ page, itemsPerPage }) {
+async function fetchAllCourses() {
   try {
     const response = await fetch("/course-t3/courses");
     if (!response.ok) throw new Error("Failed to fetch courses");
 
     const data = await response.json();
-    console.log(data);
-    return {
-      items: data.map(function(c) {
-        return ({
-          id: c.id,
-          courseNum: c.number,
-          title: c.name,
-          credits: c.hours,
-          level: c.level,
-          description: c.description,
-          department: c.department,
-        });
-      }),
-      total: data.length,
-    };
+    cachedCourses.value = data.map(function(c) {
+      return ({
+        id: c.id,
+        courseNum: c.number,
+        title: c.name,
+        credits: c.hours,
+        level: c.level,
+        description: c.description,
+        department: c.department,
+      });
+    });
+    totalItems.value = cachedCourses.value.length;
   } catch (error) {
     console.error("Error fetching courses:", error);
-    return { items: [], total: 0 };
+    cachedCourses.value = [];
+    totalItems.value = 0;
   }
 }
 
-function loadItems({ page, itemsPerPage }) {
+function paginate(items, page, pageSize) {
+  const start = (page - 1) * pageSize;
+  return items.slice(start, start + pageSize);
+}
+
+async function loadItems({ page, itemsPerPage }) {
   loading.value = true;
-  fetchCourses({ page, itemsPerPage }).then(({ items, total }) => {
-    serverItems.value = items;
-    totalItems.value = total;
+  try {
+    if (requiresRefresh.value || !cachedCourses.value.length) {
+      await fetchAllCourses();
+      requiresRefresh.value = false;
+    }
+
+    serverItems.value = paginate(cachedCourses.value, page, itemsPerPage);
+  } catch (error) {
+    console.error("Error loading paginated courses:", error);
+    serverItems.value = [];
+  } finally {
     loading.value = false;
-  });
+  }
 }
 
 function addCourse() {
@@ -175,6 +188,7 @@ async function deleteCourse(course) {
     });
     if (!response.ok) throw new Error("Delete failed");
 
+    requiresRefresh.value = true;
     loadItems({ page: 1, itemsPerPage: itemsPerPage.value });
   } catch (error) {
     console.error("Delete failed:", error);
@@ -221,6 +235,7 @@ async function uploadFiles() {
 
     if (!response.ok) throw new Error("Upload failed");
 
+    requiresRefresh.value = true;
     loadItems({ page: 1, itemsPerPage: itemsPerPage.value });
   } catch (error) {
     console.error("Upload failed:", error);
@@ -238,5 +253,4 @@ function getChangedFile(e) {
   }
   reader.readAsDataURL(filePath);
 }
-
 </script>
