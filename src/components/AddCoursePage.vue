@@ -23,6 +23,17 @@
       item-value="id"
       @update:options="loadItems"
     >
+      <template #header.search>
+        <v-text-field
+          v-model="search"
+          class="table-search"
+          density="compact"
+          hide-details
+          placeholder="Search"
+          variant="outlined"
+          bg-color="#f7f7f7"
+        />
+      </template>
       <template #body="{ items }">
         <tr v-for="item in items" :key="item.id">
           <td>
@@ -45,6 +56,7 @@
               <span class="material-icons" title="Delete course">delete</span>
             </v-btn>
           </td>
+          <td class="search-placeholder"></td>
         </tr>
       </template>
     </v-data-table-server>
@@ -75,6 +87,7 @@
   </v-dialog>
 
   <!-- CSV Upload Modal -->
+   
   <v-dialog
     max-width="500px"
     @click:outside="uploadedFile = null; isUploadingCSV = false"
@@ -102,17 +115,19 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const itemsPerPage = ref(5);
+const tableOptions = ref({ page: 1, itemsPerPage: itemsPerPage.value, search: "" });
 
 const headers = ref([
   { title: "Course", key: "course" },
   { title: "Level/Hours", key: "credits", align: "end" },
   { title: "Description", key: "description" },
   { title: "Actions", key: "actions" },
+  { title: "", key: "search", sortable: false, align: "end" },
 ]);
 
 const search = ref("");
@@ -156,15 +171,55 @@ function paginate(items, page, pageSize) {
   return items.slice(start, start + pageSize);
 }
 
-async function loadItems({ page, itemsPerPage }) {
+async function loadItems(options = {}) {
   loading.value = true;
+  tableOptions.value = {
+    ...tableOptions.value,
+    ...options,
+  };
+
+  const { page, itemsPerPage, search: optionsSearch = "" } = tableOptions.value;
   try {
     if (requiresRefresh.value || !cachedCourses.value.length) {
       await fetchAllCourses();
       requiresRefresh.value = false;
     }
 
-    serverItems.value = paginate(cachedCourses.value, page, itemsPerPage);
+    const query = optionsSearch.toLowerCase().trim();
+    const filteredItems = query
+      ? cachedCourses.value.filter((course) => {
+          const searchableFields = [
+            course.title,
+            course.courseNum,
+            course.level,
+            course.description,
+            course.department,
+          ];
+
+          return searchableFields
+            .filter((field) => field !== null && field !== undefined)
+            .map((field) => String(field).toLowerCase())
+            .some((field) => field.includes(query));
+        })
+      : cachedCourses.value;
+
+    totalItems.value = filteredItems.length;
+
+    const showAll = itemsPerPage === -1;
+    const totalPages = showAll
+      ? 1
+      : Math.max(1, Math.ceil(totalItems.value / itemsPerPage));
+    const safePage = showAll ? 1 : Math.min(page, totalPages);
+    if (safePage !== tableOptions.value.page) {
+      tableOptions.value = {
+        ...tableOptions.value,
+        page: safePage,
+      };
+    }
+
+    serverItems.value = showAll
+      ? filteredItems
+      : paginate(filteredItems, safePage, itemsPerPage);
   } catch (error) {
     console.error("Error loading paginated courses:", error);
     serverItems.value = [];
@@ -172,6 +227,14 @@ async function loadItems({ page, itemsPerPage }) {
     loading.value = false;
   }
 }
+
+watch(search, (value) => {
+  loadItems({ search: value, page: 1 });
+});
+
+onMounted(() => {
+  loadItems(tableOptions.value);
+});
 
 function addCourse() {
   router.push({ name: "course-new" });
