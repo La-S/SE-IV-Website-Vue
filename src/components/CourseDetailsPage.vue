@@ -4,29 +4,29 @@
     <h2 v-else>Add New Course</h2>
 
     <v-form ref="courseForm">
-      <v-text-field v-model="form.title" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
-      <v-text-field v-model="form.courseNum" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
+      <v-text-field v-model="form.department" :rules="[v => !!v || 'This field is required']" label="Department"></v-text-field>
+      <v-text-field v-model="form.name" :rules="[v => !!v || 'This field is required']" label="Title"></v-text-field>
+      <v-text-field v-model="form.number" :rules="[v => !!v || 'This field is required']"  label="Course Number"></v-text-field>
       <v-text-field v-model="form.level" :rules="[v => !!v || 'This field is required']"  label="Level"></v-text-field>
-      <v-text-field v-model.number="form.credits" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
+      <v-text-field v-model.number="form.hours" :rules="[v => !!v || 'This field is required']"  label="Credits" type="number"></v-text-field>
       <v-textarea v-model="form.description" label="Description"></v-textarea>
 
-      <v-btn v-if="isEdit" @click="saveCourse">Update Course</v-btn>
-      <v-btn v-else @click="saveCourse">Create Course</v-btn>
-      <v-btn @click="cancel" class="ml-5">cancel</v-btn>
+      <v-btn @click="saveCourse">{{ isEdit ? "Update Course" : "Create Course" }}</v-btn>
+      <v-btn @click="cancel" class="ml-5">Cancel</v-btn>
     </v-form>
   </v-container>
 </template>
-
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 interface CourseForm {
-  title: string
-  courseNum: string
+  department: string
+  name: string
+  number: string
   level: string
-  credits: number | string
+  hours: number | string
   description: string
 }
 
@@ -36,30 +36,69 @@ const isEdit = ref(false)
 const courseForm = ref<HTMLFormElement | null>(null)
 
 const form = ref<CourseForm>({
-  title: '',
-  courseNum: '',
+  department: '',
+  name: '',
+  number: '',
   level: '',
-  credits: '',
+  hours: '',
   description: ''
 })
 
-onMounted(() => {
+onMounted(async() => {
   if (route.params.id) {
     isEdit.value = true
+    const courseId = route.params.id as string;
+
+    try {
+      const response = await fetch(`/course-t3/course/${route.params.id}`);
+      if (!response.ok) throw new Error("Failed to fetch course data");
+
+      const course = await response.json();
 
     form.value = {
-      title: 'Intro to Algorithms',
-      courseNum: route.params.id as string,
-      level: '100',
-      credits: 3,
-      description: 'Placeholder'
+        department: course.department,
+        name: course.name,
+        number: course.number,
+        level: course.level,
+        hours: course.hours,
+        description: course.description
+      };
+     }
+      catch (err) {
+      console.error(err);
+      alert("Error loading course data");
     }
   }
 })
 
-function saveCourse() {
+  async function saveCourse() {
+  if (!form.value.department || !form.value.name || !form.value.number || !form.value.level || !form.value.hours) {
+    alert("Please fill out all required fields.");
+    return;
+  }
 
-  router.push({ name: 'courses' })
+  try {
+    const courseId = route.params.id as string;
+    const url = isEdit.value
+  ? `/course-t3/course/${route.params.id}`
+  : `/course-t3/course`;
+    const method = isEdit.value ? "PUT" : "POST";
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(form.value)
+    });
+
+    if (response.status == 409) throw new Error(`Course with number ${form.value.number} already exists. Please change the course number`)
+    if (!response.ok) throw new Error("Failed to save course");
+
+    router.push({ name: "courses" });
+  } catch (err) {
+    console.error(err);
+    alert(err);
+  }
 }
 
 function cancel(){
