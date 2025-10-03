@@ -1,6 +1,24 @@
 <template>
   <header class="d-flex align-center justify-space-between px-4 py-2">
     <h1 class="text-center my-0">Courses</h1>
+
+
+       <v-responsive
+            class="mx-auto"
+            max-width="800"
+          >
+          <v-text-field
+          prepend-inner-icon="mdi-magnify"
+          v-model="search"
+          class="table-search"
+          density="compact"
+          hide-details
+          placeholder="Search"
+          variant="outlined"
+          bg-color="#f7f7f7"
+        />
+
+        </v-responsive>
     <div class="d-flex gap-2">
       <v-btn @click="addCourse">
         <span class="material-icons" title="Add a new course">add</span>
@@ -14,6 +32,7 @@
 
   <v-card>
     <v-data-table-server
+      disable-sort
       v-model:items-per-page="itemsPerPage"
       :headers="headers"
       :items="serverItems"
@@ -23,17 +42,7 @@
       item-value="id"
       @update:options="loadItems"
     >
-      <template #header.search>
-        <v-text-field
-          v-model="search"
-          class="table-search"
-          density="compact"
-          hide-details
-          placeholder="Search"
-          variant="outlined"
-          bg-color="#f7f7f7"
-        />
-      </template>
+
       <template #body="{ items }">
         <tr v-for="item in items" :key="item.id">
           <td>
@@ -56,7 +65,7 @@
               <span class="material-icons" title="Delete course">delete</span>
             </v-btn>
           </td>
-          <td class="search-placeholder"></td>
+          <!-- <td class="search-placeholder"></td>-->
         </tr>
       </template>
     </v-data-table-server>
@@ -119,7 +128,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const itemsPerPage = ref(5);
+const itemsPerPage = ref(10);
 const tableOptions = ref({ page: 1, itemsPerPage: itemsPerPage.value, search: "" });
 
 const headers = ref([
@@ -127,7 +136,6 @@ const headers = ref([
   { title: "Level/Hours", key: "credits", align: "end" },
   { title: "Description", key: "description" },
   { title: "Actions", key: "actions" },
-  { title: "", key: "search", sortable: false, align: "end" },
 ]);
 
 const search = ref("");
